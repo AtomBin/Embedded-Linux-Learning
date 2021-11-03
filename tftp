@@ -1,0 +1,58 @@
+1 安装 tftp-hpa 和 tftpd-hpa: 
+	sudo apt-get install tftp-hpa tftpd-hpa
+	sudo apt-get install xinetd
+							 
+2 TFTP需要一个文件夹来存放文件，在用户目录下新建一个目录
+	mkdir /home/bean/linux/tftpboot
+	chmod 777 /home/bean/linux/tftpboot #给权限,根据自己的目录更改
+	
+3 最后配置 tftp，安装完成以后新建文件/etc/xinetd.d/tftp，如果没有/etc/xinetd.d 目录的话自行
+创建，然后在里面输入如下内容：
+	server tftp
+	{
+		socket_type = dgram
+		protocol = udp
+		wait = yes
+		user = root
+		server = /usr/sbin/in.tftpd
+		server_args = -s /home/bean/linux/tftpboot/
+		disable = no
+		per_source = 11
+		cps = 100 2
+		flags = IPv4
+	}
+	
+4 完了以后重启xinetd
+	sudo /etc/init.d/xinetd restart
+
+
+5 打开/etc/default/tftpd-hpa 文件，将其修改为如下所示内容：
+	# /etc/default/tftpd-hpa
+
+	TFTP_USERNAME="tftp"
+	TFTP_DIRECTORY="/home/bean/linux/tftpboot"
+	TFTP_ADDRESS=":69"
+	TFTP_OPTIONS="-l -c -s"
+	
+	
+	#TFTP_DIRECTORY 就是我们上面创建的 tftp 文件夹目录，以后我们就将所有需要通过\
+	#TFTP 传输的文件都放到这个文件夹里面，并且要给予这些文件相应的权限。
+	
+6 完了以后启动 tftp 服务
+	sudo service tftpd-hpa start
+	
+	
+
+u-boot中tftp命令：	
+	tftpboot [loadAddress] [[hostIPaddr:]bootfilename]
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
